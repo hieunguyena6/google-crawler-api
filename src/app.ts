@@ -6,13 +6,12 @@ import express from 'express';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
-import { connect, set } from 'mongoose';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { dbConnection } from '@databases';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import { AppDataSource } from './data-source';
 
 class App {
   public app: express.Application;
@@ -23,7 +22,6 @@ class App {
     this.app = express();
     this.port = config.port || 3000;
     this.env = config.env || 'development';
-
     this.connectToDatabase();
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
@@ -45,15 +43,14 @@ class App {
   }
 
   private connectToDatabase() {
-    if (this.env !== 'production') {
-      set('debug', true);
-    }
-
-    connect(dbConnection.url, dbConnection.options);
+    AppDataSource.initialize()
+      .then(() => {
+        logger.info(`Connect to database successfully`);
+      })
+      .catch(error => logger.error(error));
   }
 
   private initializeMiddlewares() {
-    console.log(config.log.format);
     this.app.use(morgan(config.log.format, { stream }));
     this.app.use(cors({ origin: config.cors.origin, credentials: config.cors.credentials }));
     this.app.use(hpp());
@@ -66,7 +63,7 @@ class App {
 
   private initializeRoutes(routes: Routes[]) {
     routes.forEach(route => {
-      this.app.use('/v2', route.router);
+      this.app.use('/v1', route.router);
     });
   }
 
