@@ -14,7 +14,6 @@ if (fs.existsSync(pathEnv)) {
 export default {
   env: process.env.NODE_ENV,
   port: process.env.PORT,
-  mongoUrl: process.env.MONGO_URL,
   secretKey: process.env.JWT_SECRET_KEY,
   log: {
     format: process.env.NODE_ENV === 'production' ? 'combined' : 'dev',
