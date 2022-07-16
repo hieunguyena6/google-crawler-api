@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Index, Unique } from 'typeorm';
-
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Index, OneToMany } from 'typeorm';
+import { File } from './File';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -11,6 +11,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany(() => File, file => file.uploadedBy)
+  files: File[];
 
   @CreateDateColumn()
   createdAt: Date;
