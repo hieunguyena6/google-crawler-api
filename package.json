@@ -18,6 +18,7 @@
   "dependencies": {
     "bcrypt": "^5.0.1",
     "body-parser": "^1.20.0",
+    "bull": "^4.8.4",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.1",
     "compression": "^1.7.4",
@@ -52,6 +53,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
+    "@types/bull": "^3.15.8",
     "@types/compression": "^1.7.1",
     "@types/config": "^0.0.39",
     "@types/cookie-parser": "^1.4.2",
