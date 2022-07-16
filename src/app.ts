@@ -12,6 +12,7 @@ import swaggerUi from 'swagger-ui-express';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import initQueueConsumer from './queue/handler';
 import { AppDataSource } from './data-source';
 
 class App {
@@ -28,6 +29,7 @@ class App {
     this.initializeRoutes(routes);
     this.initializeSwagger();
     this.initializeErrorHandling();
+    initQueueConsumer();
   }
 
   public listen() {
