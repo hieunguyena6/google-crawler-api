@@ -37,5 +37,5 @@
   "include": ["src/**/*.ts", "src/**/*.json", ".env"],
   "exclude": ["node_modules"],
   "emitDecoratorMetadata": true,
-  "experimentalDecorators": true,
+  "experimentalDecorators": true
 }

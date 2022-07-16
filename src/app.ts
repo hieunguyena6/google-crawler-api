@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import config from '@/configs';
 import express from 'express';
+import bodyParser from 'body-parser';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
@@ -59,6 +60,8 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
+    this.app.use(bodyParser.json({ limit: '10mb' }));
+    this.app.use(bodyParser.urlencoded({ limit: '10mb' }));
   }
 
   private initializeRoutes(routes: Routes[]) {
