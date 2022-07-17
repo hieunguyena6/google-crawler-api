@@ -3,7 +3,6 @@ import { Router } from 'express';
 import FileController from '@controllers/file.controller';
 import { Routes } from '@interfaces/routes.interface';
 import csvUploadFile from '@middlewares/uploadCsv.middleware';
-import fileController from '@controllers/file.controller';
 
 class FileRoute implements Routes {
   public path = '/file';
@@ -16,7 +15,7 @@ class FileRoute implements Routes {
 
   private initializeRoutes() {
     try {
-      this.router.post(`${this.path}/csv/upload`, csvUploadFile.single('file'), this.fileController.uploadCsv);
+      this.router.post(`${this.path}/csv/upload`, authMiddleware, csvUploadFile.single('file'), this.fileController.uploadCsv);
     } catch (error) {
       console.log(error);
     }
