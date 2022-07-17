@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './User';
+import { Keyword } from './Keyword';
 
 @Entity()
 export class File {
@@ -14,6 +15,9 @@ export class File {
 
   @ManyToOne(() => User, user => user.files)
   uploadedBy: User;
+
+  @OneToMany(() => Keyword, keyword => keyword.file)
+  keywords: Keyword[];
 
   @Column()
   status: string;
