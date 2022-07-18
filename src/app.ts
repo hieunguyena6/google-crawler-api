@@ -9,6 +9,7 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import path from 'path';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
@@ -54,8 +55,9 @@ class App {
   }
 
   private initializeMiddlewares() {
+    this.app.use('/htmlFile', express.static('uploads/html/'));
     this.app.use(morgan(config.log.format, { stream }));
-    this.app.use(cors({ origin: config.cors.origin, credentials: config.cors.credentials }));
+    this.app.use(cors());
     this.app.use(hpp());
     this.app.use(helmet());
     this.app.use(compression());
