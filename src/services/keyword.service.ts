@@ -12,6 +12,7 @@ class KeywordService {
         .where('file.uploadedById = :id', { id: userId })
         .offset(offset || 0)
         .skip(skip || 0)
+        .orderBy('keyword.createdAt', 'DESC')
         .getManyAndCount();
     }
     return this.keywordRepository
@@ -21,6 +22,7 @@ class KeywordService {
       .andWhere('file.uploadedById = :id', { id: userId })
       .offset(offset || 0)
       .skip(skip || 0)
+      .orderBy('keyword.createdAt', 'DESC')
       .getManyAndCount();
   }
 }
