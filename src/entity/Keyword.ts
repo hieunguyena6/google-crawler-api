@@ -10,6 +10,9 @@ export class Keyword {
   @Column({ nullable: true })
   cachePath: string;
 
+  @Column({ nullable: true })
+  cacheFileName: string;
+
   @Column()
   keyword: string;
 

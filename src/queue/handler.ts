@@ -23,13 +23,15 @@ const initQueueConsumer = () => {
         keywordDb.status = 'PROCESSING';
         keywordRepository.save(keywordDb);
 
-        const { totalResult, timeFetch, totalAd, totalLink, cachePath } = await googleSpider.crawlData(keywordText);
+        const { totalResult, timeFetch, totalAd, totalLink, cachePath, cacheFileName } = await googleSpider.crawlData(keywordText);
         keywordDb.totalResult = totalResult;
         keywordDb.timeFetch = timeFetch;
         keywordDb.totalAd = totalAd;
         keywordDb.totalLink = totalLink;
         keywordDb.cachePath = cachePath;
+        keywordDb.cacheFileName = cacheFileName;
         keywordDb.status = 'COMPLETED';
+
         keywordRepository.save(keywordDb);
 
         await sleep(500);

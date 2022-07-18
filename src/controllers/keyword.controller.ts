@@ -7,7 +7,7 @@ class KeywordController {
 
   public get = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
-      const [keywords, total] = await this.keywordService.getByKeywordAndUserId(req.params.q, req.user.id);
+      const [keywords, total] = await this.keywordService.getByKeywordAndUserId(req.query.q as string, req.user.id);
 
       res.status(200).json({ data: keywords, total, message: 'OK' });
     } catch (error) {

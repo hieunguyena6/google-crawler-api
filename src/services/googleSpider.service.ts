@@ -24,15 +24,17 @@ class GoogleSpider {
       timeFetch = resultText.split('(')[1].split(' ')[0] || 0;
     }
     const totalLink = $('.uEierd').length + $('.g').length + $('.zBAuLc').length;
-    const file_path = `uploads/html/${uuidv4()}-${keyword}.html`;
+    const fileName = `${uuidv4()}-${keyword}.html`;
+    const filePath = `uploads/html/${fileName}`;
     await mkdirp('uploads/html');
-    await this.writeFile(file_path, html);
+    await this.writeFile(filePath, html);
     return {
       totalResult,
       timeFetch,
       totalAd: $('.uEierd').length,
       totalLink,
-      cachePath: file_path,
+      cachePath: filePath,
+      cacheFileName: fileName,
     };
   }
   private async writeFile(filename, writedata) {

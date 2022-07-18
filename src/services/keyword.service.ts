@@ -17,7 +17,7 @@ class KeywordService {
     return this.keywordRepository
       .createQueryBuilder('keyword')
       .leftJoinAndSelect('keyword.file', 'file')
-      .where('keyword.keyword = :keyword', { keyword })
+      .where('keyword.keyword like :keyword', { keyword: `%${keyword}%` })
       .andWhere('file.uploadedById = :id', { id: userId })
       .offset(offset || 0)
       .skip(skip || 0)
