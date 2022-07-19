@@ -21,7 +21,7 @@ module.exports = {
       error: './logs/error.log', // pm2 error log file
       env: {
         // environment variable
-        PORT: process.env.NODE_ENV,
+        PORT: process.env.PORT,
         NODE_ENV: 'production',
       },
     },
