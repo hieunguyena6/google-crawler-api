@@ -34,12 +34,15 @@ export class Keyword {
   @Column()
   status: string;
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamptz', nullable: true })
+  dataFetchedAt: Date;
+
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date;
 }

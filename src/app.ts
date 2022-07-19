@@ -9,10 +9,10 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import path from 'path';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import redisClient from '@utils/redis';
 import initQueueConsumer from './queue/handler';
 import { AppDataSource } from './data-source';
 
@@ -46,12 +46,14 @@ class App {
     return this.app;
   }
 
-  private connectToDatabase() {
+  private async connectToDatabase() {
     AppDataSource.initialize()
       .then(() => {
         logger.info(`Connect to database successfully`);
       })
       .catch(error => logger.error(error));
+    await redisClient.connect();
+    redisClient.on('error', err => logger.error('Redis Client Error', err));
   }
 
   private initializeMiddlewares() {
