@@ -34,7 +34,6 @@ class FileService {
   }
 
   private readCsvFile(filePath) {
-    console.log(fs.readFileSync(filePath, 'utf8')?.toString());
     return fs.readFileSync(filePath, 'utf8')?.toString()?.split('\n') || [];
   }
 }
