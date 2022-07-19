@@ -11,7 +11,7 @@ export const AppDataSource = new DataSource({
   database: process.env.PG_DATABASE,
   schema: process.env.PG_SCHEMA,
   synchronize: true,
-  logging: process.env.NODE_ENV === 'development',
+  logging: false,
   entities: [User, File, Keyword],
   migrations: [],
   subscribers: [],
