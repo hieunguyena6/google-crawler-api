@@ -13,7 +13,7 @@ export interface TokenData {
 export interface RequestWithUser extends Request {
   query: any;
   cookies: any;
-  headers: any;
+  header: any;
   file: any;
   user: User;
 }

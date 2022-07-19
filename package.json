@@ -5,7 +5,7 @@
   "author": "hieunguyena6@gmail.com",
   "license": "ISC",
   "scripts": {
-    "start": "NODE_TLS_REJECT_UNAUTHORIZED='0' npm run build && cross-env NODE_ENV=production node dist/server.js",
+    "start": "cross-env NODE_ENV=production pm2 dist/server.js",
     "dev": "cross-env NODE_ENV=development NODE_TLS_REJECT_UNAUTHORIZED='0' nodemon",
     "build": "tsc && npx tsc-alias",
     "test": "jest --forceExit --detectOpenHandles",
