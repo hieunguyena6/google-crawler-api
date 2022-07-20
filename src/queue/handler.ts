@@ -15,6 +15,7 @@ const initQueueConsumer = () => {
     const fileInfo = job.data.fileInfo;
     logger.info(`[KeywordProcessing] START: with file ${JSON.stringify(fileInfo)}`);
     if (keywords && keywords.length) {
+      let prevKeywordGetFromRedis = false;
       for (let index = 0; index < keywords.length; index++) {
         const keywordText = keywords[index];
         logger.info(`[KeywordProcessing] START: with keyword ${keywordText}`);
@@ -43,8 +44,11 @@ const initQueueConsumer = () => {
           keywordDb.cachePath = cachePath;
           keywordDb.cacheFileName = cacheFileName;
           keywordDb.dataFetchedAt = dataFetchedAt;
+          prevKeywordGetFromRedis = true;
         } else {
           logger.info(`[KeywordProcessing] Keyword ${keywordText}: Not found in redis`);
+          // wait 600ms deplay in 2 requests consecutive
+          if (!prevKeywordGetFromRedis && index > 0) await sleep(600);
           const { totalResult, timeFetch, totalAd, totalLink, cachePath, cacheFileName } = await googleSpider.crawlData(keywordText);
           keywordDb.totalResult = totalResult;
           keywordDb.timeFetch = timeFetch;
@@ -61,12 +65,11 @@ const initQueueConsumer = () => {
           } catch (error) {
             logger.error(`REDIS ERROR: ${error}, skip write to Redis`);
           }
+          prevKeywordGetFromRedis = false;
         }
         keywordDb.status = 'COMPLETED';
 
         keywordRepository.save(keywordDb);
-
-        await sleep(500);
       }
     }
     done();
