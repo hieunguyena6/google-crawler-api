@@ -1,81 +1,113 @@
-// import bcrypt from 'bcrypt';
-// import request from 'supertest';
-// import App from '@/app';
-// import { CreateUserDto } from '@dtos/users.dto';
-// import AuthRoute from '@routes/auth.route';
+import bcrypt from 'bcrypt';
+import request from 'supertest';
+import App from '@/app';
+import { CreateUserDto } from '@dtos/users.dto';
+import AuthRoute from '@routes/auth.route';
+import { AppDataSource } from '../data-source';
+import redisClient from '@utils/redis';
 
-// afterAll(async () => {
-//   await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
-// });
+jest.mock('../queue/index.ts', () => ({
+  keywordsCsvProcessQueue: {
+    add: jest.fn(),
+    process: jest.fn(),
+  },
+}));
 
-// describe('Testing Auth', () => {
-//   describe('[POST] /signup', () => {
-//     it('response should have the Create userData', async () => {
-//       const userData: CreateUserDto = {
-//         email: 'test@email.com',
-//         password: 'q1w2e3r4!',
-//       };
+afterAll(async () => {
+  await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
+  await AppDataSource.close();
+  await redisClient.quit();
+});
 
-//       const authRoute = new AuthRoute();
-//       const userRepository = authRoute.authController.authService.userRepository;
+describe('Testing Auth', () => {
+  const authRoute = new AuthRoute();
+  const app = new App([authRoute]);
+  const userRepository = authRoute.authController.authService.userRepository;
 
-//       userRepository.findOneBy = jest.fn().mockReturnValue(null);
-//       userRepository.create = jest.fn().mockReturnValue({
-//         _id: '1',
-//         email: 'test@email.com',
-//         password: await bcrypt.hash(userData.password, 10),
-//       });
+  describe('[POST] /signup', () => {
+    const userData: CreateUserDto = {
+      email: 'test@email.com',
+      password: 'q1w2e3r4!',
+    };
 
-//       const app = new App([authRoute]);
-//       return request(app.getServer()).post(`${authRoute.path}signup`).send(userData);
-//     });
-//   });
+    it('should be success & response should have the Create userData', async () => {
+      userRepository.findOneBy = jest.fn().mockReturnValue(null);
+      userRepository.save = jest.fn().mockReturnValue({
+        id: 1,
+        email: 'test@email.com',
+        password: await bcrypt.hash(userData.password, 10),
+      });
 
-//   // describe('[POST] /login', () => {
-//   //   it('response should have the Set-Cookie header with the Authorization token', async () => {
-//   //     const userData: CreateUserDto = {
-//   //       email: 'test@email.com',
-//   //       password: 'q1w2e3r4!',
-//   //     };
+      const response = await request(app.getServer()).post(`/v1${authRoute.path}signup`).send(userData);
+      expect(response.statusCode).toBe(201);
+      expect(response.body.message).toEqual('signup');
+      expect(response.body.data.email).toEqual(userData.email);
+    });
 
-//   //     const authRoute = new AuthRoute();
-//   //     const users = authRoute.authController.authService.users;
+    it('should be email existed', async () => {
+      userRepository.findOneBy = jest.fn().mockReturnValue({
+        id: 1,
+        email: 'test@email.com',
+        password: await bcrypt.hash(userData.password, 10),
+      });
 
-//   //     users.findOne = jest.fn().mockReturnValue({
-//   //       _id: '60706478aad6c9ad19a31c84',
-//   //       email: userData.email,
-//   //       password: await bcrypt.hash(userData.password, 10),
-//   //     });
+      const response = await request(app.getServer()).post(`/v1${authRoute.path}signup`).send(userData);
+      expect(response.statusCode).toBe(409);
+      expect(response.body.message).toEqual(`You're email ${userData.email} already exists`);
+    });
+  });
 
-//   //     (mongoose as any).connect = jest.fn();
-//   //     const app = new App([authRoute]);
-//   //     return request(app.getServer())
-//   //       .post(`${authRoute.path}login`)
-//   //       .send(userData)
-//   //       .expect('Set-Cookie', /^Authorization=.+/);
-//   //   });
-//   // });
+  describe('[POST] /login', () => {
+    it('shold be success & have jwt in response', async () => {
+      const userData: CreateUserDto = {
+        email: 'test@email.com',
+        password: 'q1w2e3r4!',
+      };
 
-//   // describe('[POST] /logout', () => {
-//   //   it('logout Set-Cookie Authorization=; Max-age=0', async () => {
-//   //     const userData: User = {
-//   //       _id: '60706478aad6c9ad19a31c84',
-//   //       email: 'test@email.com',
-//   //       password: await bcrypt.hash('q1w2e3r4!', 10),
-//   //     };
+      userRepository.findOneBy = jest.fn().mockReturnValue({
+        id: 1,
+        email: 'test@email.com',
+        password: await bcrypt.hash(userData.password, 10),
+      });
 
-//   //     const authRoute = new AuthRoute();
-//   //     const users = authRoute.authController.authService.users;
+      const response = await request(app.getServer()).post(`/v1${authRoute.path}login`).send(userData);
 
-//   //     users.findOne = jest.fn().mockReturnValue(userData);
+      expect(response.statusCode).toBe(200);
+      expect(response.body.message).toEqual('login');
+      expect(response.body.data.user.email).toEqual(userData.email);
+      expect(response.body.data.token).toBeDefined();
+    });
 
-//   //     (mongoose as any).connect = jest.fn();
-//   //     const app = new App([authRoute]);
-//   //     return request(app.getServer())
-//   //       .post(`${authRoute.path}logout`)
-//   //       .send(userData)
-//   //       .set('Set-Cookie', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ')
-//   //       .expect('Set-Cookie', /^Authorization=\; Max-age=0/);
-//   //   });
-//   // });
-// });
+    it('shold be email not found', async () => {
+      const userData: CreateUserDto = {
+        email: 'test1@email.com',
+        password: 'q1w2e3r4!',
+      };
+
+      userRepository.findOneBy = jest.fn().mockReturnValue(null);
+
+      const response = await request(app.getServer()).post(`/v1${authRoute.path}login`).send(userData);
+
+      expect(response.statusCode).toBe(409);
+      expect(response.body.message).toEqual(`You're email ${userData.email} not found`);
+    });
+
+    it('shold be password not match', async () => {
+      const userData: CreateUserDto = {
+        email: 'test1@email.com',
+        password: 'wrongpassword',
+      };
+
+      userRepository.findOneBy = jest.fn().mockReturnValue({
+        id: 1,
+        email: 'test@email.com',
+        password: await bcrypt.hash('userData.password', 10),
+      });
+
+      const response = await request(app.getServer()).post(`/v1${authRoute.path}login`).send(userData);
+
+      expect(response.statusCode).toBe(409);
+      expect(response.body.message).toEqual(`You're password not matching`);
+    });
+  });
+});

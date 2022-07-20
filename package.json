@@ -8,7 +8,7 @@
     "start": "pm2-runtime start ecosystem.config.js --only prod",
     "dev": "cross-env NODE_ENV=development NODE_TLS_REJECT_UNAUTHORIZED='0' nodemon",
     "build": "tsc && npx tsc-alias",
-    "test": "jest --forceExit --detectOpenHandles",
+    "test": "NODE_ENV=test jest --forceExit --detectOpenHandles",
     "lint": "eslint --ignore-path .gitignore --ext .ts src/",
     "lint:fix": "npm run lint -- --fix",
     "deploy:prod": "npm run build && pm2 start ecosystem.config.js --only prod",
