@@ -48,7 +48,7 @@ const initQueueConsumer = () => {
         } else {
           logger.info(`[KeywordProcessing] Keyword ${keywordText}: Not found in redis`);
           // wait 600ms deplay in 2 requests consecutive
-          if (!prevKeywordGetFromRedis && index > 0) await sleep(1000);
+          if (!prevKeywordGetFromRedis && index > 0) await sleep(500);
           const { totalResult, timeFetch, totalAd, totalLink, cachePath, cacheFileName } = await googleSpider.crawlData(keywordText);
           keywordDb.totalResult = totalResult;
           keywordDb.timeFetch = timeFetch;
