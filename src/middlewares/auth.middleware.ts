@@ -6,7 +6,7 @@ import { DataStoredInToken, RequestWithUser } from '@interfaces/auth.interface';
 import { AppDataSource } from '../data-source';
 import { User } from '@/entity/User';
 
-const userRepository = AppDataSource.getRepository(User);
+export const userRepository = AppDataSource.getRepository(User);
 
 const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFunction) => {
   try {
@@ -28,7 +28,7 @@ const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFun
       next(new HttpException(404, 'Authentication token missing'));
     }
   } catch (error) {
-    next(new HttpException(401, 'Wrong authentication token'));
+    next(new HttpException(401, 'Wrong authentication token1'));
   }
 };
 

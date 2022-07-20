@@ -16,8 +16,12 @@ export const AppDataSource = new DataSource({
   migrations: [],
   subscribers: [],
   logger: 'advanced-console',
-  extra: {
-    ssl: process.env.NODE_ENV === 'production',
-  },
   ssl: process.env.NODE_ENV === 'production',
+  ...(process.env.NODE_ENV === 'production' && {
+    extra: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
+  }),
 });

@@ -25,8 +25,7 @@ class GoogleSpider {
     }
     const totalLink = $('.uEierd').length + $('.g').length + $('.zBAuLc').length;
     const fileName = `${uuidv4()}-${keyword}.html`;
-    const filePath = `uploads/html/${fileName}`;
-    await mkdirp('uploads/html');
+    const filePath = `./uploads/html/${fileName}`;
     await this.writeFile(filePath, html);
     return {
       totalResult,
