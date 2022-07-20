@@ -17,9 +17,11 @@ export const AppDataSource = new DataSource({
   subscribers: [],
   logger: 'advanced-console',
   ssl: process.env.NODE_ENV === 'production',
-  extra: {
-    ssl: {
-      rejectUnauthorized: process.env.NODE_ENV !== 'production',
+  ...(process.env.NODE_ENV === 'production' && {
+    extra: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
     },
-  },
+  }),
 });
