@@ -1,6 +1,6 @@
 import Queue from 'bull';
 
-const keywordsCsvProcessQueue = new Queue('keywords csv process', {
+const keywordsProcessQueue = new Queue('keyword process', {
   redis: {
     port: Number(process.env.REDIS_PORT),
     host: process.env.REDIS_HOST,
@@ -9,4 +9,4 @@ const keywordsCsvProcessQueue = new Queue('keywords csv process', {
   },
 });
 
-export { keywordsCsvProcessQueue };
+export { keywordsProcessQueue };
