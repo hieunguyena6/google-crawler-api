@@ -1,7 +1,7 @@
 import { AppDataSource } from '@/data-source';
 import { File, Keyword } from '@/entity';
 import { CreateFileDto } from '@dtos/file.dto';
-import { keywordsCsvProcessQueue } from '@/queue';
+import { keywordsProcessQueue } from '@/queue';
 import { HttpException } from '@exceptions/HttpException';
 
 const fs = require('fs');
@@ -19,16 +19,16 @@ class FileService {
       throw new HttpException(400, 'CSV is too long (> 100 keywords)');
     }
     const createdFile = await this.fileRepository.save(fileInfo);
-    keywordsCsvProcessQueue.add({
-      keywords: keywords,
-      fileInfo: createdFile,
-    });
-    keywords.forEach((keyword: string) => {
+
+    keywords.forEach(async (keyword: string) => {
       const newKeyword = new Keyword();
       newKeyword.file = createdFile;
       newKeyword.keyword = keyword;
-      newKeyword.status = 'CREATED';
-      this.keywordRepository.save(newKeyword);
+      newKeyword.status = 'PROCESSING';
+      const createdKeyword = await this.keywordRepository.save(newKeyword);
+      keywordsProcessQueue.add({
+        id: createdKeyword.id,
+      });
     });
     return createdFile;
   }

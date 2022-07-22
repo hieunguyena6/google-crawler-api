@@ -7,11 +7,8 @@ export class Keyword {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
-  cachePath: string;
-
-  @Column({ nullable: true })
-  cacheFileName: string;
+  @Column({ nullable: true, type: 'text' })
+  HTMLPage: string;
 
   @Column()
   keyword: string;
