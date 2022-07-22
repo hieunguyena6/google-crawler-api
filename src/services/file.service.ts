@@ -12,7 +12,7 @@ class FileService {
 
   public async uploadFile(fileInfo: CreateFileDto): Promise<File> {
     Object.keys(fileInfo).forEach(k => fileInfo[k] == null || (fileInfo[k] == '' && delete fileInfo[k]));
-    const keywords = Array.from(new Set(this.readCsvFile(fileInfo.path)));
+    const keywords = Array.from(new Set(this.readCsvFile(fileInfo.path))).filter(Boolean);
     if (!keywords.length) {
       throw new HttpException(400, 'CSV file is empty !');
     } else if (keywords.length > 100) {
